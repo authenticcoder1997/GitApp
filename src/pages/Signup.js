@@ -13,10 +13,13 @@ import {
   CardFooter,
   CardHeader,
 } from "reactstrap";
-import firebase from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { UserContext } from "../context/UserContext";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import firebaseApp from "../Config/firebaseConfig";
+
+const auth = getAuth(firebaseApp);
 
 const Signup = () => {
   const context = useContext(UserContext);
@@ -24,9 +27,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
 
   const handleSignUp = () => {
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((res) => {
         console.log(res);
         context.setUser({ email: res.user.email, uid: res.user.uid });
@@ -36,13 +37,16 @@ const Signup = () => {
         toast(error.message, { type: "error" });
       });
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleSignUp();
   };
+
   if (context.user?.uid) {
-    return <Redirect to="/" />;
+    return <Navigate to="/" />;
   }
+
   return (
     <Container className="text-center">
       <Row>

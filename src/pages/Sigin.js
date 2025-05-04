@@ -13,19 +13,21 @@ import {
   CardFooter,
   CardHeader,
 } from "reactstrap";
-import firebase from "firebase/app";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { UserContext } from "../context/UserContext";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import firebaseApp from "../Config/firebaseConfig";
+
+const auth = getAuth(firebaseApp);
 
 const Signin = () => {
   const context = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const handleSignIn = () => {
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
+    signInWithEmailAndPassword(auth, email, password)
       .then((res) => {
         console.log(res);
         context.setUser({ email: res.user.email, uid: res.user.uid });
@@ -35,13 +37,16 @@ const Signin = () => {
         toast(error.message, { type: "error" });
       });
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleSignIn();
   };
+
   if (context.user?.uid) {
-    return <Redirect to="/" />;
+    return <Navigate to="/" />;
   }
+
   return (
     <Container className="text-center">
       <Row>

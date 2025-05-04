@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react";
 import Axios from "axios";
-
 import {
   Row,
   Container,
@@ -8,13 +7,11 @@ import {
   Input,
   Button,
   InputGroup,
-  InputGroupAddon,
-  Toast,
+  InputGroupText,
 } from "reactstrap";
-
 import UserCard from "../components/UserCard";
 import Repos from "../components/Repos";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import { toast } from "react-toastify";
 
@@ -22,6 +19,7 @@ const Home = () => {
   const context = useContext(UserContext);
   const [query, setQuery] = useState("");
   const [user, setUser] = useState(null);
+
   const fetchDetails = async () => {
     try {
       const { data } = await Axios.get(`https://api.github.com/users/${query}`);
@@ -31,12 +29,14 @@ const Home = () => {
       toast("Not available to locate user. ", { type: "error" });
     }
   };
+
   if (!context.user?.uid) {
-    return <Redirect to="/signin" />;
+    return <Navigate to="/signin" />;
   }
+
   return (
     <Container>
-      <Row className=" mt-3">
+      <Row className="mt-3">
         <Col md="5">
           <InputGroup>
             <Input
@@ -45,11 +45,9 @@ const Home = () => {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Please provide the username"
             />
-            <InputGroupAddon addonType="append">
-              <Button onClick={fetchDetails} color="primary">
-                Fetch User
-              </Button>
-            </InputGroupAddon>
+            <Button onClick={fetchDetails} color="primary">
+              Fetch User
+            </Button>
           </InputGroup>
           {user ? <UserCard user={user} /> : null}
         </Col>
